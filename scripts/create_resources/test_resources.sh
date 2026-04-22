@@ -13,23 +13,22 @@ cd "$REPO_ROOT"
 
 set -e
 
-RAW_DATA=resources_test/common
-DATASET_DIR=resources_test/task_template
+RAW_DATA=resources_test/task_spatial_segmentation
+DATASET_DIR=resources_test/task_spatial_segmentation
 
 mkdir -p $DATASET_DIR
 
 # process dataset
 viash run src/data_processors/process_dataset/config.vsh.yaml -- \
-  --input $RAW_DATA/cxg_mouse_pancreas_atlas/dataset.h5ad \
-  --output_train $DATASET_DIR/cxg_mouse_pancreas_atlas/train.h5ad \
-  --output_test $DATASET_DIR/cxg_mouse_pancreas_atlas/test.h5ad \
-  --output_solution $DATASET_DIR/cxg_mouse_pancreas_atlas/solution.h5ad
+  --input_sp $RAW_DATA/mouse_brain_combined/common_ist.zarr \
+  --input_sc $RAW_DATA/mouse_brain_combined/common_scrnaseq.h5ad \
+  --output_spatial_dataset $DATASET_DIR/output_spatial_dataset.zarr \
+  --output_scrnaseq $DATASET_DIR/mouse_brain_combined/output_scrnaseq.h5ad
 
 # run one method
 viash run src/methods/logistic_regression/config.vsh.yaml -- \
-    --input_train $DATASET_DIR/cxg_mouse_pancreas_atlas/train.h5ad \
-    --input_test $DATASET_DIR/cxg_mouse_pancreas_atlas/test.h5ad \
-    --output $DATASET_DIR/cxg_mouse_pancreas_atlas/prediction.h5ad
+    --input $DATASET_DIR/mouse_brain_combined/common_ist.zarr \
+    --output $DATASET_DIR/mouse_brain_combined/prediction.h5ad
 
 # run one metric
 viash run src/metrics/accuracy/config.vsh.yaml -- \
@@ -38,12 +37,10 @@ viash run src/metrics/accuracy/config.vsh.yaml -- \
     --output $DATASET_DIR/cxg_mouse_pancreas_atlas/score.h5ad
 
 # write manual state.yaml. this is not actually necessary but you never know it might be useful
-cat > $DATASET_DIR/cxg_mouse_pancreas_atlas/state.yaml << HERE
-id: cxg_mouse_pancreas_atlas
-train: !file train.h5ad
-test: !file test.h5ad
-solution: !file solution.h5ad
-prediction: !file prediction.h5ad
+cat > $DATASET_DIR/mouse_brain_combined/state.yaml << HERE
+id: mouse_brain_combined
+processed: !file output_scrnaseq.h5ad
+segmentation: !file prediction.h5ad
 score: !file score.h5ad
 HERE
 

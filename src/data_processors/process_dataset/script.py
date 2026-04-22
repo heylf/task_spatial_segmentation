@@ -2,14 +2,16 @@ import sys
 import random
 import numpy as np
 import anndata as ad
+import scanpy as sc
 import openproblems as op
+import json
 
 ## VIASH START
 par = {
     'input_sp': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_ist.zarr',
     'input_sc': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_scrnaseq.h5ad',
-    'output_spatial_dataset': 'output_spatial_dataset.zarr',
-    'output_scrnaseq_reference': 'output_scrnaseq_reference.h5ad',
+    'output_spatial_dataset': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_spatial_dataset.zarr',
+    'output_scrnaseq': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_scrnaseq.h5ad',
 }
 meta = {
     'resources_dir': 'target/executable/data_processors/process_dataset',
@@ -19,7 +21,6 @@ meta = {
 
 # import helper functions
 sys.path.append(meta['resources_dir'])
-from subset_h5ad_by_format import subset_h5ad_by_format
 
 config = op.project.read_viash_config(meta["config"])
 
@@ -29,54 +30,44 @@ if par["seed"]:
     random.seed(par["seed"])
 
 print(">> Load data", flush=True)
-adata = ad.read_h5ad(par["input"])
-print("input:", adata)
+adata = ad.read_h5ad(par["input_sc"])
+print("input_sc:", adata)
 
-print(f">> Process data using {par['method']} method")
-if par["method"] == "batch":
-    batch_info = adata.obs[par["obs_batch"]]
-    batch_categories = batch_info.dtype.categories
-    test_batches = random.sample(list(batch_categories), 1)
-    is_test = [ x in test_batches for x in batch_info ]
-elif par["method"] == "random":
-    train_ix = np.random.choice(adata.n_obs, round(adata.n_obs * 0.8), replace=False)
-    is_test = [ not x in train_ix for x in range(0, adata.n_obs) ]
+print(f">> Process {par['method']} data")
 
-# subset the different adatas
-print(">> Figuring which data needs to be copied to which output file", flush=True)
-# use par arguments to look for label and batch value in different slots
-slot_mapping = {
-    "obs": {
-        "label": par["obs_label"],
-        "batch": par["obs_batch"],
-    }
-}
+if par['config']:
+    print(f">> Perform standard data preprocessing")
+    with open(par['config'], "r") as f:
+        config = json.load(f)
 
-print(">> Creating train data", flush=True)
-output_train = subset_h5ad_by_format(
-    adata[[not x for x in is_test]],
-    config,
-    "output_train",
-    slot_mapping
-)
+    # Add config to params
+    for key, value in config.items():
+        setattr(par, key, value)
 
-print(">> Creating test data", flush=True)
-output_test = subset_h5ad_by_format(
-    adata[is_test],
-    config,
-    "output_test",
-    slot_mapping
-)
+    adata.layers["counts"] = adata.X.copy()
+    
+    sc.pp.normalize_total(adata)
+    sc.pp.log1p(adata)
+    adata.layers['normlog'] = adata.X
+    
+    sc.pp.highly_variable_genes(
+        adata,
+        flavor="seurat_v3",
+        layer="counts",
+        span=par['span'],
+        n_top_genes=par['n_top_genes']
+    )
 
-print(">> Creating solution data", flush=True)
-output_solution = subset_h5ad_by_format(
-    adata[is_test],
-    config,
-    "output_solution",
-    slot_mapping
-)
+    adata.var.sort_values("means")
+    sc.pp.scale(adata, zero_center=False)
+    adata.layers['normlogscale'] = adata.X
+    
+    adata.X = adata.layers['counts']
+
+    # cell area normalization
+    sc.pp.calculate_qc_metrics(adata, inplace=True)
+    for x in ['transcript_counts', 'n_genes_by_counts']:
+        adata.obs[f'canorm_{x}'] = adata.obs[f'{x}'] / adata.obs['cell_area']
 
 print(">> Writing data", flush=True)
-output_train.write_h5ad(par["output_train"])
-output_test.write_h5ad(par["output_test"])
-output_solution.write_h5ad(par["output_solution"])
+adata.write_h5ad(par["output_scrnaseq"])

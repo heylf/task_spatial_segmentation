@@ -45,12 +45,12 @@ workflow run_wf {
       ],
       toState: [
         output_spatial_dataset: "output_spatial_dataset",
-        output_scrnaseq_reference: "output_scrnaseq_reference"
+        output_scrnaseq: "output_scrnaseq"
       ]
     )
 
     // only output the files for which an output file was specified
-    | setState(["output_spatial_dataset", "output_scrnaseq_reference"])
+    | setState(["output_spatial_dataset", "output_scrnaseq"])
 
   emit:
   output_ch
