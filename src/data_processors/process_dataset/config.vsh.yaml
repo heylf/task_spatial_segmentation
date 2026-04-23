@@ -32,6 +32,17 @@ engines:
   - type: docker
     image: openproblems/base_python:1
 
+  - type: docker
+    #image: openproblems/base_pytorch_nvidia:1 # TODO: ideally get gpu image to work
+    image: openproblems/base_python:1
+    setup:
+      - type: python
+        packages: scikit-learn
+    __merge__: 
+      - /src/base/setup_spatialdata_partial.yaml
+  - type: native
+
+
 runners:
   - type: executable
   - type: nextflow
