@@ -19,7 +19,7 @@ arguments:
     type: "integer"
     description: "A seed for the subsampling."
     example: 123
-  - name: "--conf"
+  - name: "--config"
     type: "string"
     description: "Config file in json format for data processing parameters."
     default: "config/config_default.json"
