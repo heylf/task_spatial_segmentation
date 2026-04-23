@@ -5,6 +5,7 @@ import anndata as ad
 import scanpy as sc
 import openproblems as op
 import json
+import shutil
 
 ## VIASH START
 par = {
@@ -75,3 +76,6 @@ if par['config']:
 
 print(">> Writing data", flush=True)
 adata.write_h5ad(par["output_scrnaseq"])
+
+print(">> Writing spatial data", flush=True)
+shutil.copy(par["input_sp"], par["output_spatial_dataset"])
