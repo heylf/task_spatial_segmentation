@@ -20,10 +20,8 @@ arguments:
     description: "A seed for the subsampling."
     example: 123
   - name: "--config"
-    type: file
+    type: "string"
     description: "Config file in json format for data processing parameters."
-    required: true
-    direction: input
     example: config/config_default.json
 
 resources:
