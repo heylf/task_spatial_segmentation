@@ -1,5 +1,7 @@
 __merge__: ../../api/comp_data_processor.yaml
+
 name: process_dataset
+
 arguments:
   - name: "--method"
     type: "string"
@@ -21,10 +23,10 @@ arguments:
     type: "string"
     description: "Config file in json format for data processing parameters."
     default: "config/config_default.json"
+
 resources:
   - type: python_script
     path: script.py
-  - path: /common/helper_functions/subset_h5ad_by_format.py
 
 engines:
   - type: docker

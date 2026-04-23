@@ -39,7 +39,7 @@ flowchart TB
   file_common_ist("<a href='https://github.com/openproblems-bio/task_template#file-format-common-ist-dataset'>Common iST Dataset</a>")
   comp_data_processor[/"<a href='https://github.com/openproblems-bio/task_template#component-type-data-processor'>Data processor</a>"/]
   file_spatial_dataset("<a href='https://github.com/openproblems-bio/task_template#file-format-raw-ist-dataset'>Raw iST Dataset</a>")
-  file_scrnaseq_reference("<a href='https://github.com/openproblems-bio/task_template#file-format-scrna-seq-reference'>scRNA-seq Reference</a>")
+  file_scrnaseq("<a href='https://github.com/openproblems-bio/task_template#file-format-scrna-seq-reference'>scRNA-seq Reference</a>")
   comp_control_method[/"<a href='https://github.com/openproblems-bio/task_template#component-type-control-method'>Control Method</a>"/]
   comp_method[/"<a href='https://github.com/openproblems-bio/task_template#component-type-method'>Method</a>"/]
   comp_metric[/"<a href='https://github.com/openproblems-bio/task_template#component-type-metric'>Metric</a>"/]
@@ -48,11 +48,11 @@ flowchart TB
   file_common_scrnaseq("<a href='https://github.com/openproblems-bio/task_template#file-format-common-sc-dataset'>Common SC Dataset</a>")
   file_common_ist---comp_data_processor
   comp_data_processor-->file_spatial_dataset
-  comp_data_processor-->file_scrnaseq_reference
+  comp_data_processor-->file_scrnaseq
   file_spatial_dataset---comp_control_method
   file_spatial_dataset---comp_method
-  file_scrnaseq_reference---comp_control_method
-  file_scrnaseq_reference---comp_metric
+  file_scrnaseq---comp_control_method
+  file_scrnaseq---comp_metric
   comp_control_method-->file_prediction
   comp_method-->file_prediction
   comp_metric-->file_score

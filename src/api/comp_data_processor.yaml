@@ -24,7 +24,7 @@ argument_groups:
         direction: output
         required: true
       - name: "--output_scrnaseq"
-        __merge__: file_scrnaseq_reference.yaml
+        __merge__: file_scrnaseq.yaml
         direction: output
         required: true
 test_resources:
