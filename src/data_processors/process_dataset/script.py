@@ -12,7 +12,11 @@ par = {
     'input_sc': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_scrnaseq.h5ad',
     'output_spatial_dataset': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_spatial_dataset.zarr',
     'output_scrnaseq': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_scrnaseq.h5ad',
+    'method': 'xenium',
+    'seed': 123,
+    'config': 'config/config_default.json'
 }
+
 meta = {
     'resources_dir': 'target/executable/data_processors/process_dataset',
     'config': 'target/executable/data_processors/process_dataset/.config.vsh.yaml'
