@@ -4,6 +4,7 @@ import numpy as np
 import anndata as ad
 import scanpy as sc
 import openproblems as op
+import spatialdata as sd
 import json
 import shutil
 
