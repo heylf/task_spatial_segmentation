@@ -14,7 +14,7 @@ par = {
     'output_scrnaseq': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_scrnaseq.h5ad',
     'method': 'xenium',
     'seed': 123,
-    'config': 'config/config_default.json'
+    'config': 'task_spatial_segmentation/src/data_processors/process_dataset/config/config_default.json'
 }
 
 meta = {
