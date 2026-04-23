@@ -78,4 +78,4 @@ print(">> Writing data", flush=True)
 adata.write_h5ad(par["output_scrnaseq"])
 
 print(">> Writing spatial data", flush=True)
-shutil.copy(par["input_sp"], par["output_spatial_dataset"])
+shutil.copytree(par["input_sp"], par["output_spatial_dataset"])
