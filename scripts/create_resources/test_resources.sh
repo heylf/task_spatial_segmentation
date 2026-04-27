@@ -13,38 +13,42 @@ cd "$REPO_ROOT"
 
 set -e
 
-RAW_DATA=resources_test/task_spatial_segmentation
-DATASET_DIR=resources_test/task_spatial_segmentation
+DATASET_ID=mouse_brain_combined
+
+RAW_DATA=resources_test/common
+DATASET_DIR=resources_test/task_spatial_segmentation/$DATASET_ID
 
 mkdir -p $DATASET_DIR
 
 # process dataset
 viash run src/data_processors/process_dataset/config.vsh.yaml -- \
-  --input_sp $RAW_DATA/mouse_brain_combined/common_ist.zarr \
-  --input_sc $RAW_DATA/mouse_brain_combined/common_scrnaseq.h5ad \
-  --output_spatial_dataset $DATASET_DIR/output_spatial_dataset.zarr \
-  --output_scrnaseq $DATASET_DIR/mouse_brain_combined/output_scrnaseq.h5ad
+  --input_sp $RAW_DATA/2023_10x_mouse_brain_xenium_rep1/dataset.zarr \
+  --input_sc $RAW_DATA/2023_yao_mouse_brain_scrnaseq_10xv2/dataset.h5ad \
+  --output_spatial_dataset $DATASET_DIR/spatial_dataset.zarr \
+  --output_scrnaseq_reference $DATASET_DIR/scrnaseq_reference.h5ad
 
 # run one method
-viash run src/methods/logistic_regression/config.vsh.yaml -- \
-    --input $DATASET_DIR/mouse_brain_combined/common_ist.zarr \
-    --output $DATASET_DIR/mouse_brain_combined/prediction.h5ad
+viash run src/methods/cellpose/config.vsh.yaml -- \
+    --input $DATASET_DIR/spatial_dataset.zarr \
+    --output $DATASET_DIR/prediction.h5ad
 
 # run one metric
-viash run src/metrics/accuracy/config.vsh.yaml -- \
-    --input_prediction $DATASET_DIR/cxg_mouse_pancreas_atlas/prediction.h5ad \
-    --input_solution $DATASET_DIR/cxg_mouse_pancreas_atlas/solution.h5ad \
-    --output $DATASET_DIR/cxg_mouse_pancreas_atlas/score.h5ad
+# TODO: implement this!
+# viash run src/metrics/ari/config.vsh.yaml -- \
+#     --input_prediction $DATASET_DIR/prediction.h5ad \
+#     --input_scrnaseq_reference $DATASET_DIR/scrnaseq_reference.h5ad \
+#     --output $DATASET_DIR/score.h5ad
 
 # write manual state.yaml. this is not actually necessary but you never know it might be useful
-cat > $DATASET_DIR/mouse_brain_combined/state.yaml << HERE
-id: mouse_brain_combined
-processed: !file output_scrnaseq.h5ad
-segmentation: !file prediction.h5ad
-score: !file score.h5ad
+cat > $DATASET_DIR/state.yaml << HERE
+id: $DATASET_ID
+spatial_dataset: spatial_dataset.zarr
+scrnaseq_reference: scrnaseq_reference.h5ad
+prediction: prediction.h5ad
+score: score.h5ad
 HERE
 
 # only run this if you have access to the openproblems-data bucket
 aws s3 sync --profile op \
-  "$DATASET_DIR" s3://openproblems-data/resources_test/task_template \
+  "$DATASET_DIR" s3://openproblems-data/resources_test/task_spatial_segmentation/mouse_brain_combined/ \
   --delete --dryrun
