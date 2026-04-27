@@ -22,7 +22,7 @@ mkdir -p $DATASET_DIR
 viash run src/data_processors/process_dataset/config.vsh.yaml -- \
   --input_sp $RAW_DATA/mouse_brain_combined/common_ist.zarr \
   --input_sc $RAW_DATA/mouse_brain_combined/common_scrnaseq.h5ad \
-  # --output_spatial_dataset $DATASET_DIR/output_spatial_dataset.zarr \
+  --output_spatial_dataset $DATASET_DIR/output_spatial_dataset.zarr \
   --output_scrnaseq $DATASET_DIR/mouse_brain_combined/output_scrnaseq.h5ad
 
 # run one method

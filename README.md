@@ -175,7 +175,7 @@ Arguments:
 |:---|:---|:---|
 | `--input_sp` | `file` | An unprocessed spatial imaging dataset stored as a zarr file. |
 | `--input_sc` | `file` | An unprocessed dataset as output by a dataset loader. |
-<!-- | `--output_spatial_dataset` | `file` | (*Output*) A spatial transcriptomics dataset, preprocessed for this benchmark. | -->
+| `--output_spatial_dataset` | `file` | (*Output*) A spatial transcriptomics dataset, preprocessed for this benchmark. |
 | `--output_scrnaseq` | `file` | (*Output*) A single-cell dataset, preprocessed for this benchmark. |
 
 </div>

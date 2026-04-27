@@ -12,7 +12,7 @@ import shutil
 par = {
     'input_sp': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_ist.zarr',
     'input_sc': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_scrnaseq.h5ad',
-    #'output_spatial_dataset': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_spatial_dataset.zarr',
+    'output_spatial_dataset': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_spatial_dataset.zarr',
     'output_scrnaseq': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_scrnaseq.h5ad',
     'method': 'xenium',
     'seed': 123,
@@ -77,3 +77,6 @@ if par['config']:
 
 print(">> Writing data", flush=True)
 adata.write_h5ad(par["output_scrnaseq"])
+
+print(">> Writing spatial data", flush=True)
+shutil.copytree(par["input_sp"], par["output_spatial_dataset"])
