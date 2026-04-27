@@ -1,34 +1,20 @@
-import sys
 import random
-import numpy as np
 import anndata as ad
-import scanpy as sc
-import openproblems as op
 import spatialdata as sd
-import json
+import os
 import shutil
 
 ## VIASH START
 par = {
-    'input_sp': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_ist.zarr',
-    'input_sc': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_scrnaseq.h5ad',
+    'input_sp': 'resources_test/common/2023_10x_mouse_brain_xenium_rep1/dataset.zarr',
+    'input_sc': 'resources_test/common/2023_yao_mouse_brain_scrnaseq_10xv2/dataset.h5ad',
     'output_spatial_dataset': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_spatial_dataset.zarr',
-    'output_scrnaseq': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_scrnaseq.h5ad',
-    'method': 'xenium',
+    'output_scrnaseq_reference': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_scrnaseq_reference.h5ad',
+    'span': 0.3,
     'seed': 123,
-    'config': 'task_spatial_segmentation/src/data_processors/process_dataset/config/config_default.json'
-}
-
-meta = {
-    'resources_dir': 'target/executable/data_processors/process_dataset',
-    'config': 'target/executable/data_processors/process_dataset/.config.vsh.yaml'
+    'n_top_genes': 3000
 }
 ## VIASH END
-
-# import helper functions
-sys.path.append(meta['resources_dir'])
-
-config = op.project.read_viash_config(meta["config"])
 
 # set seed if need be
 if par["seed"]:
@@ -36,47 +22,28 @@ if par["seed"]:
     random.seed(par["seed"])
 
 print(">> Load data", flush=True)
-adata = ad.read_h5ad(par["input_sc"])
-print("input_sc:", adata)
+sc_data = ad.read_h5ad(par["input_sc"])
 
-print(f">> Process {par['method']} data")
+print(">> Processing sc_data", flush=True)
 
-if par['config']:
-    print(f">> Perform standard data preprocessing")
-    with open(par['config'], "r") as f:
-        config = json.load(f)
+# TODO: process the single-cell dataset
 
-    # Add config to params
-    for key, value in config.items():
-        setattr(par, key, value)
-
-    adata.layers["counts"] = adata.X.copy()
-    
-    sc.pp.normalize_total(adata)
-    sc.pp.log1p(adata)
-    adata.layers['normlog'] = adata.X
-    
-    sc.pp.highly_variable_genes(
-        adata,
-        flavor="seurat_v3",
-        layer="counts",
-        span=par['span'],
-        n_top_genes=par['n_top_genes']
-    )
-
-    adata.var.sort_values("means")
-    sc.pp.scale(adata, zero_center=False)
-    adata.layers['normlogscale'] = adata.X
-    
-    adata.X = adata.layers['counts']
-
-    # cell area normalization
-    sc.pp.calculate_qc_metrics(adata, inplace=True)
-    for x in ['transcript_counts', 'n_genes_by_counts']:
-        adata.obs[f'canorm_{x}'] = adata.obs[f'{x}'] / adata.obs['cell_area']
+print(f"single cell data: {sc_data}")
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par["output_scrnaseq"])
+sc_data.write_h5ad(par["output_scrnaseq_reference"], compression="gzip")
+
+# read input_sp
+print(">> Read spatial data", flush=True)
+sp_data = sd.read_zarr(par["input_sp"])
+
+print(">> Processing spatial data", flush=True)
+# TODO: process the spatial dataset
+
+print(f"spatial data: {sp_data}")
 
 print(">> Writing spatial data", flush=True)
-shutil.copytree(par["input_sp"], par["output_spatial_dataset"])
+# remove directory if it exists
+if os.path.exists(par["output_spatial_dataset"]):
+    shutil.rmtree(par["output_spatial_dataset"])
+sp_data.write(par["output_spatial_dataset"], overwrite=True)

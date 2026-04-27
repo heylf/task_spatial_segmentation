@@ -12,7 +12,7 @@ arguments:
     direction: input
     required: true
   - name: "--input_scrnaseq_reference"
-    __merge__: file_scrnaseq.yaml
+    __merge__: file_scrnaseq_reference.yaml
     direction: input
     required: true
   - name: "--output"

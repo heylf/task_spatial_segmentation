@@ -9,7 +9,7 @@ argument_groups:
         direction: output
         required: true
       - name: "--input_scrnaseq_reference"
-        __merge__: /src/api/file_scrnaseq.yaml
+        __merge__: /src/api/file_scrnaseq_reference.yaml
         direction: output
         required: true
   - name: Outputs

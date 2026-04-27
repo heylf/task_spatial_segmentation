@@ -18,8 +18,8 @@ argument_groups:
         __merge__: /src/api/file_spatial_dataset.yaml
         direction: output
         required: true
-      - name: "--output_scrnaseq"
-        __merge__: /src/api/file_scrnaseq.yaml
+      - name: "--output_scrnaseq_reference"
+        __merge__: /src/api/file_scrnaseq_reference.yaml
         direction: output
         required: true
 

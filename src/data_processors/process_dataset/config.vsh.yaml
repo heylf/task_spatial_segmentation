@@ -3,26 +3,18 @@ __merge__: ../../api/comp_data_processor.yaml
 name: process_dataset
 
 arguments:
-  - name: "--method"
-    type: "string"
-    description: "The spatial technology data type."
-    choices: ["xenium"]
-  - name: "--obs_label"
-    type: "string"
-    description: "Which .obs slot to use as label."
-    default: "cell_type"
-  - name: "--obs_batch"
-    type: "string"
-    description: "Which .obs slot to use as batch covariate."
-    default: "batch"
   - name: "--seed"
     type: "integer"
     description: "A seed for the subsampling."
     example: 123
-  - name: "--config"
-    type: "string"
-    description: "Config file in json format for data processing parameters."
-    example: config/config_default.json
+  - name: "--span"
+    type: double
+    description: The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor='seurat_v3'.
+    default: 0.3
+  - name: "--n_top_genes"
+    type: integer
+    description: Number of highly-variable genes to keep. Mandatory if flavor='seurat_v3'.
+    default: 3000
 
 resources:
   - type: python_script
@@ -38,7 +30,6 @@ engines:
     __merge__: 
       - /src/base/setup_spatialdata_partial.yaml
   - type: native
-
 
 runners:
   - type: executable

@@ -23,8 +23,8 @@ argument_groups:
         __merge__: file_spatial_dataset.yaml
         direction: output
         required: true
-      - name: "--output_scrnaseq"
-        __merge__: file_scrnaseq.yaml
+      - name: "--output_scrnaseq_reference"
+        __merge__: file_scrnaseq_reference.yaml
         direction: output
         required: true
 test_resources:
