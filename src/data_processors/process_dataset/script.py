@@ -2,6 +2,7 @@ import random
 import anndata as ad
 import spatialdata as sd
 import os
+import scanpy as sc
 import shutil
 
 ## VIASH START
@@ -25,8 +26,35 @@ print(">> Load data", flush=True)
 sc_data = ad.read_h5ad(par["input_sc"])
 
 print(">> Processing sc_data", flush=True)
+if "counts" not in sc_data.layers and sc_data.X != None:
+    print(">> Save raw counts in .layer", flush=True)
+    sc_data.layers["counts"] = sc_data.X.copy()
+    
+if "normalized" not in sc_data.layers:
+    print(">> Perform standard normalization", flush=True)
+    normalized = sc.pp.normalize_total(sc_data.layers["counts"])
+    sc_data.layers["normalized"] = normalized.copy()
 
-# TODO: process the single-cell dataset
+if "normalized_log" not in sc_data.layers:
+    print(">> Perform log1p normalization", flush=True)
+    normalized_log = sc.pp.log1p(sc_data.layers["normalized"])
+    sc_data.layers['normalized_log'] = normalized_log.copy()
+
+if "normalized_log_scaled" not in sc_data.layers:
+    print(">> Perform 0 mean and standard variance normalization", flush=True)
+    normalized_log_scaled = sc.pp.scale(sc_data.layers["normalized"])
+    sc_data.layers['normalized_log_scaled'] = normalized_log_scaled.copy()
+
+if "hvg" not in sc_data.var:
+    print(">> Compute highly variable genes", flush=True)
+    sc.pp.highly_variable_genes(
+        sc_data,
+        flavor="seurat_v3",
+        layer="counts",
+        span=par['span'],
+        n_top_genes=par['n_top_genes']
+    )
+    sc_data.var.rename(columns={"highly_variable": "hvg"}, inplace=True)
 
 print(f"single cell data: {sc_data}")
 
@@ -38,7 +66,16 @@ print(">> Read spatial data", flush=True)
 sp_data = sd.read_zarr(par["input_sp"])
 
 print(">> Processing spatial data", flush=True)
-# TODO: process the spatial dataset
+sp_data_table = sp_data.tables['table']
+
+if "cell_area" not in sp_data_table.obs:
+    print(">> Perform scanpy qc for cell area", flush=True)
+    sc.pp.calculate_qc_metrics(sp_data_table, inplace=True)
+
+for x in ["transcript_counts", "n_genes_by_counts"]:
+    if f"ca_normalized_{x}" not in sp_data_table.obs and x in sp_data_table.obs:
+        print(f">> Perform cell area normalization for {x}", flush=True)
+        sp_data_table.obs[f'ca_normalized_{x}'] = sp_data_table.obs[f"{x}"] / sp_data_table.obs["cell_area"]
 
 print(f"spatial data: {sp_data}")
 
@@ -47,3 +84,5 @@ print(">> Writing spatial data", flush=True)
 if os.path.exists(par["output_spatial_dataset"]):
     shutil.rmtree(par["output_spatial_dataset"])
 sp_data.write(par["output_spatial_dataset"], overwrite=True)
+
+# %%
