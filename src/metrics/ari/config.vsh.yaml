@@ -42,26 +42,6 @@ arguments:
     type: "string"
     default: "leiden"
     description: Label to be used to perform ARI.
-  - name: "--n_neighbors"
-    type: "integer"
-    default: 20
-    description: Number of neighbors to use for nearest neighbors distance matrix.
-  - name: "--min_dist"
-    type: "double"
-    default: 0.1
-    description: Effective minimum distance to use for UMAP.
-  - name: "--spread"
-    type: "double"
-    default: 1.2
-    description: The effective scale of embedded points to use for UMAP.
-  - name: "--resolution"
-    type: "double"
-    default: 1.0
-    description: The resolution to use for leiden clustering.
-  - name: "--seed"
-    type: "integer"
-    default: 123
-    description: Seed.
 
 # Resources required to run the component
 resources:

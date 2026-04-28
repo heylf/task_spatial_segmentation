@@ -1,0 +1,52 @@
+__merge__: ../../api/comp_data_processor.yaml
+
+name: process_dataset
+
+arguments:
+  - name: "--label"
+    type: "string"
+    default: "cell_type"
+    description: Label added to anndata for prediction.
+  - name: "--n_neighbors"
+    type: "integer"
+    default: 20
+    description: Number of neighbors to use for nearest neighbors distance matrix.
+  - name: "--min_dist"
+    type: "double"
+    default: 0.1
+    description: Effective minimum distance to use for UMAP.
+  - name: "--spread"
+    type: "double"
+    default: 1.2
+    description: The effective scale of embedded points to use for UMAP.
+  - name: "--resolution"
+    type: "double"
+    default: 1.0
+    description: The resolution to use for leiden clustering.
+  - name: "--seed"
+    type: "integer"
+    default: 123
+    description: Seed.
+
+resources:
+  - type: python_script
+    path: script.py
+
+engines:
+  - type: docker
+    #image: openproblems/base_pytorch_nvidia:1 # TODO: ideally get gpu image to work
+    image: openproblems/base_python:1
+    setup:
+      - type: python
+        packages: scikit-learn
+      - type: python
+        packages: leidenalg
+    __merge__: 
+      - /src/base/setup_spatialdata_partial.yaml
+  - type: native
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highmem, midcpu, midtime]

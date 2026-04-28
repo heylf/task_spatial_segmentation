@@ -1,0 +1,27 @@
+# Base component API configuration
+__merge__: ../../api/comp_control_method.yaml
+
+# Component configuration
+name: "random_labels"
+label: Random Labels
+summary: "Negative control by randomly generating labels."
+description: "This method serves as a negative control, where random labels are generated for the data."
+info:
+  preferred_normalization: counts
+  variants:
+    random_features:
+
+# Script configuration
+resources:
+  - type: python_script
+    path: script.py
+
+# Platform configuration
+engines:
+  - type: docker
+    image: openproblems/base_python:1.0.0
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowtime, lowmem, lowcpu]
