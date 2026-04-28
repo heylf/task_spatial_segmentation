@@ -8,26 +8,27 @@ __merge__: ../../api/comp_metric.yaml
 
 # A unique identifier for your component (required).
 # Can contain only lowercase letters or underscores.
-name: accuracy
+name: ari
 
 # Metadata for your component
 info:
   metrics:
     # A unique identifier for your metric (required).
     # Can contain only lowercase letters or underscores.
-    - name: accuracy
+    - name: ari
       # A relatively short label, used when rendering visualisarions (required)
-      label: Accuracy
+      label: ARI
       # A one sentence summary of how this metric works (required). Used when 
       # rendering summary tables.
-      summary: "The percentage of correctly predicted labels."
+      summary: "Adjusted Rand index to measure the similarity between two data clusterings."
       # A multi-line description of how this component works (required). Used
       # when rendering reference documentation.
       description: |
-        The percentage of correctly predicted labels.
+        The Rand index is the accuracy of determining if a link belongs within a cluster or not.
+        The Rand index has a value between 0 and 1, with 0 indicating that the two data clusterings do not agree on any pair of points and 1 indicating that the data clusterings are exactly the same.
       # A reference key from the bibtex library at src/common/library.bib (required).
       references:
-        doi: 10.48550/arXiv.2008.05756
+        doi: 10.1080/01621459.1971.10482356
       # The minimum possible value for this metric (required)
       min: 0
       # The maximum possible value for this metric (required)
@@ -36,11 +37,31 @@ info:
       maximize: true
 
 # Component-specific parameters (optional)
-# arguments:
-#   - name: "--n_neighbors"
-#     type: "integer"
-#     default: 5
-#     description: Number of neighbors to use.
+arguments:
+  - name: "--label"
+    type: "string"
+    default: "leiden"
+    description: Label to be used to perform ARI.
+  - name: "--n_neighbors"
+    type: "integer"
+    default: 20
+    description: Number of neighbors to use for nearest neighbors distance matrix.
+  - name: "--min_dist"
+    type: "double"
+    default: 0.1
+    description: Effective minimum distance to use for UMAP.
+  - name: "--spread"
+    type: "double"
+    default: 1.2
+    description: The effective scale of embedded points to use for UMAP.
+  - name: "--resolution"
+    type: "double"
+    default: 1.0
+    description: The resolution to use for leiden clustering.
+  - name: "--seed"
+    type: "integer"
+    default: 123
+    description: Seed.
 
 # Resources required to run the component
 resources:
@@ -60,6 +81,8 @@ engines:
     setup:
       - type: python
         packages: scikit-learn
+      - type: python
+        packages: leidenalg
 
 runners:
   # This platform allows running the component natively

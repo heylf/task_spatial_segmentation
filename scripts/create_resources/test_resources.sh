@@ -33,11 +33,11 @@ viash run src/methods/cellpose/config.vsh.yaml -- \
     --output $DATASET_DIR/prediction.h5ad
 
 # run one metric
-# TODO: implement this!
-# viash run src/metrics/ari/config.vsh.yaml -- \
-#     --input_prediction $DATASET_DIR/prediction.h5ad \
-#     --input_scrnaseq_reference $DATASET_DIR/scrnaseq_reference.h5ad \
-#     --output $DATASET_DIR/score.h5ad
+# TODO files need to be changed
+viash run src/metrics/ari/config.vsh.yaml -- \
+    --input_scrnaseq_reference $RAW_DATA/2023_yao_mouse_brain_scrnaseq_10xv2/dataset.h5ad \
+    --input_prediction $DATASET_DIR/output_scrnaseq_reference.h5ad \
+    --output $DATASET_DIR/score.h5ad
 
 # write manual state.yaml. this is not actually necessary but you never know it might be useful
 cat > $DATASET_DIR/state.yaml << HERE
