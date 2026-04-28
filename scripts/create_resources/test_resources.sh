@@ -22,7 +22,6 @@ mkdir -p $DATASET_DIR
 
 # process dataset
 viash run src/data_processors/process_dataset/config.vsh.yaml -- \
-  --id $DATASET_ID \
   --input_sp $RAW_DATA/2023_10x_mouse_brain_xenium_rep1/dataset.zarr \
   --input_sc $RAW_DATA/2023_yao_mouse_brain_scrnaseq_10xv2/dataset.h5ad \
   --output_spatial_dataset $DATASET_DIR/spatial_dataset.zarr \
