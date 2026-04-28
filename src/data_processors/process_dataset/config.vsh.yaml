@@ -27,6 +27,8 @@ engines:
     setup:
       - type: python
         packages: scikit-learn
+      - type: python
+        packages: scikit-misc
     __merge__: 
       - /src/base/setup_spatialdata_partial.yaml
   - type: native
