@@ -10,8 +10,8 @@ from spatialdata.models import Labels2DModel
 
 ## VIASH START
 par = {
-  'input': 'resources_test/task_spatial_segmentation/mouse_brain_combined/common_ist.zarr',
-  'output': 'resources_test/task_spatial_segmentation/mouse_brain_combined/prediction.h5ad'
+  'input': 'resources_test/task_spatial_segmentation/mouse_brain_combined/spatial_dataset.zarr',
+  'output': 'prediction.zarr'
 }
 meta = {
   'name': 'cellpose'
