@@ -11,17 +11,9 @@ info:
     type: spatialdata_zarr
     images:
       - type: object
-        name: image
+        name: morphology_mip
         description: The raw image data
         required: true
-      - type: object
-        name: image_3D
-        description: The raw 3D image data
-        required: false
-      - type: object
-        name: he_image
-        description: H&E image data
-        required: false 
     labels:
       - type: object
         name: "cell_labels"
@@ -31,18 +23,6 @@ info:
         name: "nucleus_labels"
         description: Cell segmentation labels
         required: false
-      # - type: datatree
-      #   name: "{segm}_3D"
-      #   description: Custom segmentation of the 3D data
-      #   required: false
-      # - type: datatree
-      #   name: "expert_segm_{patch}"
-      #   description: Expert segmentation of a patch of the data
-      #   required: false
-      # - type: DataTree[zyx]
-      #   name: "expert_segm_{patch}_3D"
-      #   description: Expert segmentation of a 3D patch of the data
-      #   required: false
     points:
       - type: dataframe
         name: transcripts
@@ -110,7 +90,7 @@ info:
             description: Geometry of the nucleus boundary
     tables:
       - type: anndata
-        name: "metadata"
+        name: "table"
         description: Metadata of spatial dataset
         required: true
         uns:
@@ -171,4 +151,3 @@ info:
         name: global
         description: Coordinate system of the replicate
         required: true
-

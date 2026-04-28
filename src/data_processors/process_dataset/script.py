@@ -11,7 +11,14 @@ par = {
     'output_scrnaseq_reference': 'resources_test/task_spatial_segmentation/mouse_brain_combined/output_scrnaseq_reference.h5ad',
     'span': 0.3,
     'seed': 123,
-    'n_top_genes': 3000
+    'n_top_genes': 3000,
+    'dataset_id': 'mouse_brain_combined',
+    'dataset_name': 'Mouse brain combined dataset',
+    'dataset_url': '',
+    'dataset_summary': '',
+    'dataset_description': '',
+    'dataset_reference': [],
+    'dataset_organism': 'Mus musculus',
 }
 ## VIASH END
 
@@ -59,6 +66,11 @@ print(f"single cell data: {sc_data}")
 print(">> Processing sc_data", flush=True)
 sc_processing(sc_data)
 
+print(">> Override dataset metadata in .uns", flush=True)
+sc_data.uns["orig_dataset_id"] = sc_data.uns.get("dataset_id", None)
+for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_summary", "dataset_description", "dataset_reference", "dataset_organism"]:
+    sc_data.uns[key] = par[key]
+
 print(">> Writing data", flush=True)
 sc_data.write_h5ad(par["output_scrnaseq_reference"], compression="gzip")
 
@@ -81,7 +93,13 @@ for x in ["transcript_counts", "n_genes_by_counts"]:
         print(f">> Perform cell area normalization for {x}", flush=True)
         sp_data_table.obs[f'ca_normalized_{x}'] = sp_data_table.obs[f"{x}"] / sp_data_table.obs["cell_area"]
 
+print(">> Override dataset metadata in .uns", flush=True)
+sp_data_table.uns["orig_dataset_id"] = sp_data_table.uns.get("dataset_id", None)
+for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_summary", "dataset_description", "dataset_reference", "dataset_organism"]:
+    sp_data_table.uns[key] = par[key]
+
 print(f"spatial data: {sp_data}")
+print(f"spatial data tables['table']: {sp_data.tables['table']}")
 
 print(">> Writing spatial data", flush=True)
 sp_data.write(par["output_spatial_dataset"], overwrite=True)
