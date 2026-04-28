@@ -26,9 +26,7 @@ engines:
     image: openproblems/base_python:1
     setup:
       - type: python
-        packages: scikit-learn
-      - type: python
-        packages: scikit-misc
+        packages: [scikit-learn, scikit-misc]
     __merge__: 
       - /src/base/setup_spatialdata_partial.yaml
   - type: native
