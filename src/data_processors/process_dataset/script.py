@@ -1,4 +1,3 @@
-
 import random
 import anndata as ad
 import spatialdata as sd
@@ -73,9 +72,9 @@ sp_data_table = sp_data.tables['table']
 print(f"single cell part of spatial data: {sp_data_table}")
 sc_processing(sp_data_table)
 
-if "ce  ll_area" not in sp_data_table.obs:
+if "cell_area" not in sp_data_table.obs:
     print(">> Perform scanpy qc for cell area", flush=True)
-    sc.pp.calculate_qc_metrics(sp_data_table, inplace=True)
+    sc.pp.calculate_qc_metrics(sp_data_table, layer="counts", inplace=True)
 
 for x in ["transcript_counts", "n_genes_by_counts"]:
     if f"ca_normalized_{x}" not in sp_data_table.obs and x in sp_data_table.obs:
@@ -86,4 +85,3 @@ print(f"spatial data: {sp_data}")
 
 print(">> Writing spatial data", flush=True)
 sp_data.write(par["output_spatial_dataset"], overwrite=True)
-# %%
